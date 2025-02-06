@@ -19,7 +19,7 @@ class GatosViewModel : ViewModel() {
         private set
 
     var errorMessage by mutableStateOf<String?>(null)
-    var breedDescription by mutableStateOf<String?>(null)
+
         private set
 
     private val gatosApiService: GatosApiService

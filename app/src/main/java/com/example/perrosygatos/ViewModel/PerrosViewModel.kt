@@ -23,8 +23,6 @@ class PerrosViewModel : ViewModel() {
         private set
 
     var errorMessage by mutableStateOf<String?>(null)
-    var breedDescription by mutableStateOf<String?>(null) // Estado para la descripción
-        private set
 
 
 

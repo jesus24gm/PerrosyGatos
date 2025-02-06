@@ -12,14 +12,14 @@ object ApiClient {
 
     private val dogHttpClient = OkHttpClient.Builder().addInterceptor { chain ->
         val request: Request = chain.request().newBuilder()
-            .addHeader("x-api-key", DOG_API_KEY) // Agregar API Key de DogAPI
+            .addHeader("x-api-key", DOG_API_KEY)
             .build()
         chain.proceed(request)
     }.build()
 
     private val catHttpClient = OkHttpClient.Builder().addInterceptor { chain ->
         val request: Request = chain.request().newBuilder()
-            .addHeader("x-api-key", CAT_API_KEY) // Agregar API Key de CatAPI
+            .addHeader("x-api-key", CAT_API_KEY)
             .build()
         chain.proceed(request)
     }.build()
