@@ -2,7 +2,9 @@ package com.example.perrosygatos.Vistas
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.layout.Column
@@ -16,14 +18,22 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -37,6 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.perrosygatos.Modelos.DogBreed
 import com.example.perrosygatos.ViewModel.PerrosViewModel
@@ -44,10 +55,38 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PantallaVistaPerros(navController: NavController, viewModel: PerrosViewModel) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(text = "Razas de Perros") },
+                actions = {
+                    IconButton(onClick = {
+                        navController.navigate("gatos") {
+                            popUpTo("perros") { inclusive = false }
+                            launchSingleTop = true
+                        }
+                    }) {
+                        Icon(imageVector = Icons.Default.Favorite, contentDescription = "Ver gatos")
+                    }
+                }
+            )
+        }
+    ) { innerPadding ->
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFE3F2FD))
+            .padding(innerPadding)) {
+            VistaPerros(viewModel)
+        }
+    }
+}
 
 
 @Composable
-fun VistaPerros(viewModel: PerrosViewModel, modifier: Modifier) {
+fun VistaPerros(viewModel: PerrosViewModel) {
     val dogBreeds by remember { viewModel::dogBreeds }
     val errorMessage by remember { viewModel::errorMessage }
     val context = LocalContext.current
@@ -90,11 +129,7 @@ fun VistaPerros(viewModel: PerrosViewModel, modifier: Modifier) {
         }
 
         if (showBreedsList) {
-            Text(
-                text = "Razas de perros",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
+
 
             LazyColumn(modifier = Modifier.weight(1f)) {
                 items(dogBreeds) { breed ->
@@ -159,18 +194,17 @@ fun VistaPerros(viewModel: PerrosViewModel, modifier: Modifier) {
                 }
             }
 
-            Text(
-                text = "⬅ Volver a la lista",
-                color = Color.Blue,
-                modifier = Modifier
-                    .clickable {
-                        showBreedsList = true
-                        selectedBreed = null
-                        breedImages = emptyList()
-                    }
-                    .padding(top = 16.dp),
-                style = MaterialTheme.typography.bodyMedium
-            )
+            Button(
+                onClick = {
+                    showBreedsList = true
+                    selectedBreed = null
+                    breedImages = emptyList()
+                },
+                modifier = Modifier.padding(top = 16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
+            ) {
+                Text(text = " Volver a la lista", color = Color.White)
+            }
         }
     }
 }

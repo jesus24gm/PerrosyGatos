@@ -14,8 +14,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.perrosygatos.ViewModel.GatosViewModel
 import com.example.perrosygatos.ViewModel.PerrosViewModel
+import com.example.perrosygatos.Vistas.PantallaVistaGatos
+import com.example.perrosygatos.Vistas.PantallaVistaPerros
 import com.example.perrosygatos.Vistas.VistaGatos
 import com.example.perrosygatos.Vistas.VistaPerros
 import com.example.perrosygatos.ui.theme.PerrosyGatosTheme
@@ -25,33 +31,31 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val viewModel = PerrosViewModel()
-            val viewModelG = GatosViewModel()
-            PerrosyGatosTheme {
-                Column(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Greeting("Hola", modifier = Modifier.padding(16.dp))
+            val navController = rememberNavController()
+            val perrosViewModel: PerrosViewModel = viewModel()
+            val gatosViewModel: GatosViewModel = viewModel()
 
-                   //VistaGatos(viewModelG, modifier = Modifier.weight(1f))
-                    VistaPerros(viewModel, modifier = Modifier.weight(1f))
-                }
-                }
+            NavHost(navController = navController, startDestination = "perros") {
+                composable("perros") { PantallaVistaPerros(navController, perrosViewModel) }
+                composable("gatos") { PantallaVistaGatos(navController, gatosViewModel) }
+
+
             }
         }
     }
 
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Row(
-        modifier = Modifier.padding(16.dp)
-    ) {
-        Text(
-            text = "Bienvenido a la aplicación de Perros y Gatos!",
-            modifier = modifier
+    @Composable
+    fun Greeting(name: String, modifier: Modifier = Modifier) {
+        Row(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = "Bienvenido a la aplicación de Perros y Gatos!",
+                modifier = modifier
 
-        )
+            )
+        }
+
     }
-
 }

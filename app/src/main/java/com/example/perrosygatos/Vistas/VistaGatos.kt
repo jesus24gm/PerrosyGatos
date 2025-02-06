@@ -2,9 +2,12 @@ package com.example.perrosygatos.Vistas
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,11 +16,23 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,12 +46,39 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.perrosygatos.Modelos.CatBreed
 import com.example.perrosygatos.ViewModel.GatosViewModel
+import com.example.perrosygatos.ViewModel.PerrosViewModel
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PantallaVistaGatos(navController: NavController, viewModel: GatosViewModel) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(text = "Razas de Gatos") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(imageVector = Icons.Default.Home, contentDescription = "Volver")
+                    }
+                }
+
+            )
+        }
+    ) { innerPadding ->
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFFFF3E0))
+            .padding(innerPadding)) {
+            VistaGatos(viewModel)
+        }
+}
+}
 
 @Composable
-fun VistaGatos(viewModel: GatosViewModel, modifier: Modifier) {
+fun VistaGatos(viewModel: GatosViewModel) {
     val catBreeds by remember { viewModel::catBreeds }
     val errorMessage by remember { viewModel::errorMessage }
     val context = LocalContext.current
@@ -79,11 +121,7 @@ fun VistaGatos(viewModel: GatosViewModel, modifier: Modifier) {
         }
 
         if (showBreedsList) {
-            Text(
-                text = "Razas de gatos",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
+
 
             LazyColumn(modifier = Modifier.weight(1f)) {
                 items(catBreeds) { breed ->
@@ -129,7 +167,12 @@ fun VistaGatos(viewModel: GatosViewModel, modifier: Modifier) {
                             .size(350.dp)
                             .padding(8.dp)
                             .clickable{
-                                val wikipediaUrl = "https://en.wikipedia.org/wiki/${selectedBreed?.name?.replace(" ", "_")}_cat"
+                                val breedName = selectedBreed?.name?.replace(" ", "_") ?: ""
+                                val wikipediaUrl = if (breedName.contains("_cat")) {
+                                    "https://en.wikipedia.org/wiki/$breedName"
+                                } else {
+                                    "https://en.wikipedia.org/wiki/${breedName}_cat"
+                                }
                                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(wikipediaUrl))
                                 context.startActivity(intent)
                             }   ,
@@ -140,25 +183,25 @@ fun VistaGatos(viewModel: GatosViewModel, modifier: Modifier) {
                         AsyncImage(
                             model = imageUrl,
                             contentDescription = "Imagen de ${breed.name}",
-                            contentScale = ContentScale.Fit,
+                            contentScale = ContentScale.Inside,
                             modifier = Modifier.fillMaxSize()
+                                .aspectRatio(1f)
                         )
                     }
                 }
             }
 
-            Text(
-                text = "⬅ Volver a la lista",
-                color = Color.Blue,
-                modifier = Modifier
-                    .clickable {
-                        showBreedsList = true
-                        selectedBreed = null
-                        breedImages = emptyList()
-                    }
-                    .padding(top = 16.dp),
-                style = MaterialTheme.typography.bodyMedium
-            )
+            Button(
+                onClick = {
+                    showBreedsList = true
+                    selectedBreed = null
+                    breedImages = emptyList()
+                },
+                modifier = Modifier.padding(top = 16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
+            ) {
+                Text(text = " Volver a la lista", color = Color.White)
+            }
         }
     }
 }
